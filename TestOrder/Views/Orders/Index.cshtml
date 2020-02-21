@@ -1,0 +1,113 @@
+﻿@model List<TestOrder.Models.View.TestOrderProductModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<script type="text/javascript">
+
+    function prepareShipment() {
+        var selectedOrders = [];
+        $.each($("input[name=select]:checked"), function () {
+            selectedOrders.push($(this).val());
+        });
+        $.ajax({
+            method: "POST",
+            url: "/prepareOrdersToShip",
+            data: { selectedOrdersIds: selectedOrders },
+            success: function (data) {
+                $("#shipmentResult").val('/prepareOrdersToShip has generated this: ' + data.Json);
+                orders(data.Data);
+            }
+            //TODO: on error
+        });
+    }
+
+
+    function orders(model) {
+        $.ajax({
+            method: "POST",
+            url: "/orders",
+            data: { model },
+            success: function (data) {
+                $("#ordersResult").val('/orders got this: ' + data.Json);
+            }
+            //TODO: on error
+        });
+    }
+</script>
+
+<h2>Orders Page</h2>
+
+<section style="display: flex; flex-direction: column; flex-wrap: nowrap; width: 100%">
+    <div style="display: flex; width: 100%">
+
+        <div style="width: 5%">
+            Select
+        </div>
+        <div style="width: 10%">
+            First Name
+        </div>
+        <div style="width: 10%">
+            Last Name
+        </div>
+        <div style="width: 20%">
+            Address
+        </div>
+        <div style="width: 10%">
+            City
+        </div>
+        <div style="width: 10%">
+            State
+        </div>
+        <div style="width: 10%">
+            Country
+        </div>
+        <div>Products/Quantity/Price/Total</div>
+    </div>
+
+
+    @foreach(var item in Model)
+    {
+        <div style="display: flex; width: 100%">
+
+            <div style="width: 5%">
+                @Html.CheckBox("select", htmlAttributes: new { value = item.Order.Id })
+            </div>
+            <div style="width: 10%">
+                @Html.DisplayFor(modelItem => item.Order.FirstName)
+            </div>
+            <div style="width: 10%">
+                @Html.DisplayFor(modelItem => item.Order.LastName)
+            </div>
+            <div style="width: 20%">
+                @Html.DisplayFor(modelItem => item.Order.Address)
+            </div>
+            <div style="width: 10%">
+                @Html.DisplayFor(modelItem => item.Order.City)
+            </div>
+            <div style="width: 10%">
+                @Html.DisplayFor(modelItem => item.Order.State)
+            </div>
+            <div style="width: 10%">
+                @Html.DisplayFor(modelItem => item.Order.Country)
+            </div>
+            <ul>
+                @foreach (var prod in item.Products)
+                {
+                    <li>@Html.DisplayFor(modelItem => prod.Product.Name)</li>
+                    <li>@Html.DisplayFor(modelItem => prod.Quantity)</li>
+                    <li>@Html.DisplayFor(modelItem => prod.Price)</li>
+                    <li>@Html.DisplayFor(modelItem => prod.Total)</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <button id="prepareShipBtn" onclick="prepareShipment()">Prepare Shipments</button>
+    <div style="display: flex">
+        <textarea id="shipmentResult" style="width: 50%" rows="15"></textarea>
+        <textarea id="ordersResult" style="width: 50%" rows="15"></textarea>
+    </div>
+</section>
+
