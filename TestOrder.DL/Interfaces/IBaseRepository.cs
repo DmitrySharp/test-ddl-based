@@ -6,11 +6,9 @@ using TestOrder.Models.Entities;
 
 namespace TestOrder.DL.Interfaces
 {
-    public interface IBaseRepository<TEntity> where TEntity : BaseEntity
+    public interface IBaseRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> GetAsync(int id);
         Task<IEnumerable<TEntity>> GetAllAsync();
         IQueryable<TEntity> GetBaseQuery();
-        Task<TEntity> GetNoTrackingAsync(int id);
     }
 }
